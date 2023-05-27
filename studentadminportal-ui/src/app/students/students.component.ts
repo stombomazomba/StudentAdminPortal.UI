@@ -13,7 +13,7 @@ import { MatSort } from '@angular/material/sort';
 export class StudentsComponent implements OnInit {
   //Properties
   students: Student[] = [];
-  displayedColumns: string[] = ['firstName', 'lastName', 'dateOfBirth', 'email','mobile','gender'];
+  displayedColumns: string[] = ['firstName', 'lastName', 'dateOfBirth', 'email','mobile','gender', 'edit'];
   dataSource: MatTableDataSource<Student> = new MatTableDataSource<Student>();
   //View Type property for the paginator
    @ViewChild(MatPaginator) matPaginator!: MatPaginator;
@@ -24,7 +24,7 @@ export class StudentsComponent implements OnInit {
 
   ngOnInit(): void {
     //Fetching the students
-    this.studentService.getStudent().subscribe(
+    this.studentService.getStudents().subscribe(
       (successResponse) => {
         //Assigning students coming back from the API
         this.students = successResponse;
@@ -44,7 +44,6 @@ export class StudentsComponent implements OnInit {
       }
     );
   }
-
   filterStudents(){
     this.dataSource.filter = this.filterString.trim().toLowerCase();
   }
