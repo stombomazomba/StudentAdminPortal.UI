@@ -37,6 +37,8 @@ export class ViewStudentComponent implements OnInit {
   isNewStudent = false;
   header = '';
 
+  displayProfileImageUrl = '';
+
   genderList: Gender[] = [];
 
   constructor(
@@ -56,16 +58,24 @@ export class ViewStudentComponent implements OnInit {
           //New Student Functionality
           this.isNewStudent = true;
           this.header = 'Add New Student';
+          this.setImage();
         } else {
           //Existing student functionality
           this.isNewStudent = false;
           this.header = 'Edit Student';
-
           this.studentService
             .getStudent(this.studentId)
-            .subscribe((successResponse) => {
-              this.student = successResponse;
-            });
+
+            .subscribe(
+              (successResponse) => {
+                this.student = successResponse;
+                this.setImage();
+                console.log(successResponse);
+              },
+              (errorResponse) => {
+                this.setImage();
+              }
+            );
         }
 
         this.genderService.getGenderList().subscribe((successResponse) => {
@@ -125,5 +135,44 @@ export class ViewStudentComponent implements OnInit {
         //log the error response
       }
     );
+  }
+
+  uploadImage(event: any): void {
+    if (this.studentId) {
+      const file: File = event.target.files[0];
+      this.studentService.uploadImage(this.student.id, file).subscribe(
+        (successResponse) => {
+          this.student.profileImageUrl = successResponse;
+          this.setImage();
+          console.log(successResponse)
+
+          //show a notification using snackbar
+          this.snackbar.open('Profile Image Updated successfully', undefined, {
+            duration: 3000,
+          });
+        },
+        (errorResponse) => {}
+      );
+    }
+  }
+
+  private setImage(): void {
+    if (this.student.profileImageUrl) {
+      if (
+        this.student.profileImageUrl == 'imageurl' ||
+        this.student.profileImageUrl == 'null'
+      ) {
+        //display default
+        this.displayProfileImageUrl = 'assets/user.jpg';
+      } else {
+        //fetch image by url
+        this.displayProfileImageUrl = this.studentService.getImagePath(
+          this.student.profileImageUrl
+        );
+        console.log(this.displayProfileImageUrl);
+      }
+    } else {
+      this.displayProfileImageUrl = 'assets/userImage.png';
+    }
   }
 }

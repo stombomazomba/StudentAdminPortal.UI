@@ -59,4 +59,23 @@ private baseApiUrl ='https://localhost:7057';
     };
       return this.httpClient.post<Student>(this.baseApiUrl + '/Students/Students/Add',addStudentRequest);
    }
+
+   getImagePath(relativePath:string){
+    var fileName=relativePath.substring(relativePath.lastIndexOf('s')+2);
+
+    return `${this.baseApiUrl}/Resources/Images/${fileName}`;
+
+   }
+
+   uploadImage(studentId: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append("profileImage", file);
+
+    const url = `${this.baseApiUrl}/Students/Students/${studentId}/upload-image`;
+
+    return this.httpClient.post(url, formData, { responseType: 'text' });
+  }
+
+
+
 }
