@@ -1,25 +1,24 @@
 <div class="page-header">
-  <div class="container">
-    <h1>{{ header }}</h1>
+  <div class="container text-center">
+    <h1>{{ header }} {{ student.firstName }} {{ student.lastName }}</h1>
   </div>
 </div>
 
 <div class="container">
-  <div class="row top-row">
-    <div class="col-xs-12 row end-xs">
-      <a routerLink="/students" color="primary" mat-raised-button>
-        <mat-icon>chevron_left</mat-icon>
-        Go back
+  <div class="row">
+    <div class="col-xs-12 d-flex justify-content-end">
+      <a routerLink="/students" class="bg-primary text-white" mat-raised-button>
+        <mat-icon>chevron_left</mat-icon>Go Back
       </a>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-xs-6">
-      <!-- Student Details -->
+    <div class="col">
+      <!-- Student details -->
       <form #studentDetailsForm="ngForm">
-        <div class="row">
-          <div class="col-xs-6">
+        <div class="row gx-5">
+          <div class="col">
             <mat-form-field appearance="outline">
               <mat-label>First Name</mat-label>
               <input
@@ -27,9 +26,13 @@
                 matInput
                 [(ngModel)]="student.firstName"
                 name="firstName"
+                required
               />
+              <mat-error>Please fill this field</mat-error>
             </mat-form-field>
+          </div>
 
+          <div class="col">
             <mat-form-field appearance="outline">
               <mat-label>Last Name</mat-label>
               <input
@@ -37,129 +40,161 @@
                 matInput
                 [(ngModel)]="student.lastName"
                 name="lastName"
+                required
               />
+              <mat-error>Please fill this field</mat-error>
             </mat-form-field>
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-xs-12">
-            <mat-form-field appearance="outline">
-              <mat-label>Date Of Birth</mat-label>
-              <input
-                matInput
-                [matDatepicker]="picker"
-                [(ngModel)]="student.dateOfBirth"
-                name="dateOfBirth"
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="picker"
-              ></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-          </div>
+        <div class="row picker">
+          <mat-form-field appearance="outline">
+            <mat-label>Date Of Birth</mat-label>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              [(ngModel)]="student.dateOfBirth"
+              name="dateOfBirth"
+              required
+            />
+            <mat-error>Please fill this field</mat-error>
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
         </div>
 
-        <div class="row">
-          <div class="col-xs-6">
+        <div class="row gx-5">
+          <div class="col">
             <mat-form-field appearance="outline">
               <mat-label>Email</mat-label>
               <input
-                type="text"
+                type="email"
                 matInput
                 [(ngModel)]="student.email"
                 name="email"
+                required
               />
+              <mat-error>Please fill this field</mat-error>
             </mat-form-field>
+          </div>
 
+          <div class="col">
             <mat-form-field appearance="outline">
-              <mat-label>Mobile</mat-label>
+              <mat-label>Phone Number</mat-label>
               <input
-                type="number"
+                type="tel"
                 matInput
                 [(ngModel)]="student.mobile"
-                name="mobile"
+                name="phone"
+                required
               />
+              <mat-error>Please fill this field</mat-error>
             </mat-form-field>
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-xs-12">
-            <mat-form-field appearance="outline">
-              <mat-label>Gender</mat-label>
-              <mat-select [(ngModel)]="student.genderId" name="gender">
-                <mat-option
-                  *ngFor="let gender of genderList"
-                  [value]="gender.id"
-                >
-                  {{ gender.description }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+        <div class="row picker">
+          <mat-form-field appearance="outline">
+            <mat-label>Gender</mat-label>
+            <mat-select [(ngModel)]="student.genderId" name="gender" required>
+              <mat-option *ngFor="let gender of genderList" [value]="gender.id">
+                {{ gender.description }}
+              </mat-option>
+            </mat-select>
+            <mat-error>Please fill this field</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="row picker">
+          <mat-form-field appearance="outline">
+            <mat-label>Physical Address</mat-label>
+            <textarea
+              matInput
+              [(ngModel)]="student.address.physicalAddress"
+              name="physicalAddress"
+              required
+            ></textarea>
+            <mat-error>Please fill this field</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="row picker">
+          <mat-form-field appearance="outline">
+            <mat-label>Postal Address</mat-label>
+            <textarea
+              matInput
+              [(ngModel)]="student.address.postalAddress"
+              name="postalAddress"
+              required
+            ></textarea>
+            <mat-error>Please fill this field</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div
+          class="row ms-1 d-flex justify-content-end w-50 justify-content-md-start"
+          *ngIf="!isNewStudent"
+        >
+          <div class="col mt-1">
+            <button
+              mat-raised-button
+              class="bg-primary text-white btn-form"
+              (click)="onUpdate()"
+            >
+              Save
+            </button>
+          </div>
+
+          <div class="col mt-1">
+            <button
+              mat-raised-button
+              class="bg-danger text-white btn-form"
+              (click)="onDelete()"
+            >
+              Delete
+            </button>
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-xs-12">
-            <mat-form-field appearance="outline">
-              <mat-label>Physical Address</mat-label>
-              <textarea
-                matInput
-                [(ngModel)]="student.address.physicalAddress"
-                name="physicalAddress"
-              ></textarea>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-xs-12">
-            <mat-form-field appearance="outline">
-              <mat-label>Postal Address</mat-label>
-              <textarea
-                matInput
-                [(ngModel)]="student.address.postalAddress"
-                name="postalAddress"
-              ></textarea>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-xs-12">
-            <div class="row between-xs" *ngIf="!isNewStudent">
-              <button mat-raised-button color="primary" (click)="onUpdate()">
-                Save
-              </button>
-              <button mat-raised-button color="warn" (click)="onDelete()">
-                Delete
-              </button>
-            </div>
-            <div class="row between-xs" *ngIf="isNewStudent">
-              <button mat-raised-button color="primary" (click)="onAdd()">
-                Add
-              </button>
-            </div>
+        <div
+          class="row ms-1 d-flex justify-content-end w-50 justify-content-md-start"
+          *ngIf="isNewStudent"
+        >
+          <div class="col mt-1">
+            <button
+              mat-raised-button
+              class="bg-primary text-white btn-form"
+              (click)="onAdd()"
+            >
+              Add
+            </button>
           </div>
         </div>
       </form>
     </div>
-    <div class="col-xs-6">
+
+    <div class="col">
       <!-- Profile Image -->
-      <div class="row center-xs">
+      <div class="row center gx-5">
         <div class="image-container">
           <img [src]="displayProfileImageUrl" alt="Profile Image" />
         </div>
       </div>
-<div class="row">
-<div class="col-xs-12" row center-xs mt-1  *ngIf="!isNewStudent">
-     <input hidden type = "file" #imageUpload (change) ="uploadImage($event)">
-     <button mat-raised-button color="primary" (click)="imageUpload.click()">Change Image</button>
-</div>
-</div>
 
+      <div class="row gx-5 mt-1">
+        <input hidden type="file" #imageUpload (change)="uploadImage($event)" />
+        <button
+          mat-raised-button
+          class="bg-primary text-white btn-profile"
+          (click)="imageUpload.click()"
+        >
+          Change Image
+        </button>
+      </div>
     </div>
   </div>
 </div>
+
