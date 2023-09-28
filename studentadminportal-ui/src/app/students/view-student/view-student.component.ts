@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { StudentService } from '../student.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Student } from 'src/app/models/api-models/student.model';
 import { Gender } from 'src/app/models/api-models/ui-models/gender.model';
 import { GenderService } from 'src/app/services/gender.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-view-student',
@@ -40,6 +41,8 @@ export class ViewStudentComponent implements OnInit {
   displayProfileImageUrl = '';
 
   genderList: Gender[] = [];
+
+  @ViewChild('studentDetailsForm') studentDetailsForm?: NgForm;
 
   constructor(
     private readonly studentService: StudentService,
@@ -86,20 +89,24 @@ export class ViewStudentComponent implements OnInit {
   }
 
   onUpdate(): void {
-    //Call Student service to Update
+    //Check If Form is valid
+    if (this.studentDetailsForm?.form.valid) {
+      //Call Student service to Update
+      this.studentService
+        .updateStudent(this.student.id, this.student)
+        .subscribe(
+          (successResponse) => {
+            this.snackbar.open('Student updated successfully', undefined, {
+              duration: 3000,
+            });
 
-    this.studentService.updateStudent(this.student.id, this.student).subscribe(
-      (successResponse) => {
-        this.snackbar.open('Student updated successfully', undefined, {
-          duration: 3000,
-        });
-
-        // Show notification
-      },
-      (errorResponse) => {
-        // log it
-      }
-    );
+            // Show notification
+          },
+          (errorResponse) => {
+            // log it
+          }
+        );
+    }
   }
 
   onDelete(): void {
@@ -121,20 +128,25 @@ export class ViewStudentComponent implements OnInit {
   }
 
   onAdd(): void {
-    this.studentService.addStudent(this.student).subscribe(
-      (successResponse) => {
-        this.snackbar.open('Student added successfully', undefined, {
-          duration: 2000,
-        });
+    //Check if form is valid
+    if (this.studentDetailsForm?.form.valid) {
+      //Submit form data to API
+      this.studentService.addStudent(this.student).subscribe(
+        (successResponse) => {
+          this.snackbar.open('Student added successfully', undefined, {
+            duration: 2000,
+          });
 
-        setTimeout(() => {
-          this.router.navigateByUrl(`students/${successResponse.id}`);
-        }, 3000);
-      },
-      (errorResponse) => {
-        //log the error response
-      }
-    );
+          setTimeout(() => {
+            this.router.navigateByUrl(`students/${successResponse.id}`);
+          }, 3000);
+        },
+        (errorResponse) => {
+          //log the error response
+          console.log(errorResponse);
+        }
+      );
+    }
   }
 
   uploadImage(event: any): void {
@@ -144,7 +156,7 @@ export class ViewStudentComponent implements OnInit {
         (successResponse) => {
           this.student.profileImageUrl = successResponse;
           this.setImage();
-          console.log(successResponse)
+          console.log(successResponse);
 
           //show a notification using snackbar
           this.snackbar.open('Profile Image Updated successfully', undefined, {
